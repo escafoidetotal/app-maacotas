@@ -236,11 +236,47 @@ class PetDetailScreen extends ConsumerWidget {
                     onTap: () => context.go('/pets/$petId/walks'),
                   ),
                   _HealthMenuCard(
+                    title: 'Alimentación',
+                    subtitle: 'Plan y horario de comidas',
+                    icon: Icons.food_bank,
+                    color: const Color(0xFF00BCD4),
+                    onTap: () => context.go('/pets/$petId/feeding'),
+                  ),
+                  _HealthMenuCard(
                     title: 'Personalizar Avatar',
                     subtitle: 'Acessórios e skins',
                     icon: Icons.color_lens,
                     color: const Color(0xFF9B59B6),
                     onTap: () => context.go('/pets/$petId/avatar'),
+                  ),
+
+                  const SizedBox(height: AppSizes.lg),
+
+                  const Text(
+                    'Información',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+
+                  _HealthMenuCard(
+                    title: 'Info de raza',
+                    subtitle: 'Características, salud y cuidados',
+                    icon: Icons.info_outline,
+                    color: const Color(0xFF00897B),
+                    onTap: () => context.go(
+                      '/pets/$petId/breed-info?breed=${Uri.encodeComponent(pet.breed)}',
+                    ),
+                  ),
+                  _HealthMenuCard(
+                    title: 'Exportar historial PDF',
+                    subtitle: 'Genera un informe de salud',
+                    icon: Icons.picture_as_pdf,
+                    color: const Color(0xFFE53935),
+                    onTap: () => context.go('/pdf-export'),
                   ),
 
                   const SizedBox(height: AppSizes.xxl),

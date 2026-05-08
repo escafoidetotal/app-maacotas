@@ -23,6 +23,9 @@ import '../../features/gamification/shop_screen.dart';
 import '../../features/gamification/avatar_customizer_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/vets/vet_locator_screen.dart';
+import '../../features/health/pdf_export_screen.dart';
+import '../../features/feeding/feeding_screen.dart';
+import '../../features/pets/breed_info_screen.dart';
 
 class AppShell extends StatefulWidget {
   final Widget child;
@@ -221,9 +224,27 @@ GoRouter buildAppRouter() {
                       return AvatarCustomizerScreen(petId: petId);
                     },
                   ),
+                  GoRoute(
+                    path: 'feeding',
+                    builder: (context, state) {
+                      final petId = state.pathParameters['petId']!;
+                      return FeedingScreen(petId: petId);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'breed-info',
+                    builder: (context, state) {
+                      final breed = state.uri.queryParameters['breed'] ?? '';
+                      return BreedInfoScreen(breed: breed);
+                    },
+                  ),
                 ],
               ),
             ],
+          ),
+          GoRoute(
+            path: '/pdf-export',
+            builder: (context, state) => const PdfExportScreen(),
           ),
           GoRoute(
             path: '/calendar',
