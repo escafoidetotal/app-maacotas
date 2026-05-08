@@ -22,6 +22,7 @@ import '../../features/gamification/pawpoints_screen.dart';
 import '../../features/gamification/shop_screen.dart';
 import '../../features/gamification/avatar_customizer_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/vets/vet_locator_screen.dart';
 
 class AppShell extends StatefulWidget {
   final Widget child;
@@ -241,6 +242,10 @@ GoRouter buildAppRouter() {
           GoRoute(
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/vets',
+            builder: (context, state) => const VetLocatorScreen(),
           ),
         ],
       ),

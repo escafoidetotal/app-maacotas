@@ -7,6 +7,7 @@ import '../../providers/pawpoints_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../services/admob_service.dart';
 import 'widgets/points_badge.dart';
+import 'widgets/streak_calendar.dart';
 
 class PawPointsScreen extends ConsumerWidget {
   const PawPointsScreen({super.key});
@@ -82,6 +83,10 @@ class PawPointsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Streak calendar
+                  const StreakCalendar(),
+                  const SizedBox(height: AppSizes.lg),
+
                   // Streak card
                   Container(
                     padding: const EdgeInsets.all(AppSizes.md),

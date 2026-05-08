@@ -36,10 +36,10 @@ class QuickActionsRow extends StatelessWidget {
             : context.go('/pets'),
       ),
       _QuickAction(
-        label: 'Vet',
-        icon: Icons.local_hospital,
-        color: const Color(0xFFE74C3C),
-        onTap: () => context.go('/calendar'),
+        label: 'Vet cercano',
+        icon: Icons.medical_services,
+        color: const Color(0xFF4ECDC4),
+        onTap: () => context.go('/vets'),
       ),
       _QuickAction(
         label: 'Loja',

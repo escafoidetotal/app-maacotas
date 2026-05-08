@@ -7,6 +7,7 @@ import '../models/medication_model.dart';
 import '../models/walk_model.dart';
 import '../models/vet_appointment_model.dart';
 import '../models/user_model.dart';
+import '../models/feeding_model.dart';
 
 class HiveService {
   static const String petsBox = 'pets';
@@ -17,6 +18,7 @@ class HiveService {
   static const String walksBox = 'walks';
   static const String vetAppointmentsBox = 'vet_appointments';
   static const String userBox = 'user';
+  static const String feedingsBox = 'feedings';
 
   static Future<void> initialize() async {
     await Hive.initFlutter();
@@ -30,6 +32,7 @@ class HiveService {
     if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(WalkModelAdapter());
     if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(VetAppointmentModelAdapter());
     if (!Hive.isAdapterRegistered(7)) Hive.registerAdapter(UserModelAdapter());
+    if (!Hive.isAdapterRegistered(8)) Hive.registerAdapter(FeedingModelAdapter());
 
     // Open boxes
     await Hive.openBox<PetModel>(petsBox);
@@ -40,6 +43,7 @@ class HiveService {
     await Hive.openBox<WalkModel>(walksBox);
     await Hive.openBox<VetAppointmentModel>(vetAppointmentsBox);
     await Hive.openBox<UserModel>(userBox);
+    await Hive.openBox<FeedingModel>(feedingsBox);
   }
 
   static Box<PetModel> get pets => Hive.box<PetModel>(petsBox);
@@ -50,6 +54,7 @@ class HiveService {
   static Box<WalkModel> get walks => Hive.box<WalkModel>(walksBox);
   static Box<VetAppointmentModel> get vetAppointments => Hive.box<VetAppointmentModel>(vetAppointmentsBox);
   static Box<UserModel> get user => Hive.box<UserModel>(userBox);
+  static Box<FeedingModel> get feedings => Hive.box<FeedingModel>(feedingsBox);
 
   // Pet operations
   static Future<void> savePet(PetModel pet) async {
@@ -220,5 +225,19 @@ class HiveService {
 
   static Future<void> saveUser(UserModel u) async {
     await user.put(u.id, u);
+  }
+
+  // Feeding operations
+  static Future<void> saveFeeding(FeedingModel feeding) async {
+    await feedings.put(feeding.id, feeding);
+  }
+
+  static Future<void> deleteFeeding(String feedingId) async {
+    await feedings.delete(feedingId);
+  }
+
+  static List<FeedingModel> getFeedingsForPet(String petId) {
+    return feedings.values.where((f) => f.petId == petId).toList()
+      ..sort((a, b) => a.time.compareTo(b.time));
   }
 }
