@@ -1,5 +1,7 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -9,6 +11,9 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
+    // Initialize timezone
+    tz_data.initializeTimeZones();
+
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -82,7 +87,7 @@ class NotificationService {
       id,
       title,
       body,
-      _toTZDateTime(scheduledDate),
+      tz.TZDateTime.from(scheduledDate, tz.local),
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -95,7 +100,8 @@ class NotificationService {
     required int id,
     required String title,
     required String body,
-    required Time time,
+    required int hour,
+    required int minute,
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
@@ -107,7 +113,25 @@ class NotificationService {
     );
     const iosDetails = DarwinNotificationDetails();
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
-    await _plugin.showDailyAtTime(id, title, body, time, details, payload: payload);
+
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduledDate,
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: payload,
+    );
   }
 
   Future<void> cancelNotification(int id) async {
@@ -116,11 +140,5 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _plugin.cancelAll();
-  }
-
-  // Convert DateTime to TZDateTime (simplified, uses local timezone)
-  dynamic _toTZDateTime(DateTime dateTime) {
-    // In a real app, use timezone package for proper TZ handling
-    return dateTime;
   }
 }

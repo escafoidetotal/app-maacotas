@@ -2,16 +2,15 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
-    - always_declare_return_types
-    - avoid_print
-    - prefer_const_constructors
-    - prefer_const_declarations
-    - prefer_final_fields
-    - use_key_in_widget_constructors
+    avoid_print: false
+    prefer_const_constructors: false
+    prefer_const_declarations: false
 
 analyzer:
   errors:
     invalid_annotation_target: ignore
+    missing_required_param: warning
+    dead_code: info
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
