@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/supabase_service.dart';
+import '../../features/auth/login_screen.dart';
+import '../../features/auth/register_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/pets/pet_list_screen.dart';
@@ -50,29 +53,27 @@ class _AppShellState extends State<AppShell> {
       body: widget.child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          context.go(_routes[index]);
-        },
+        onDestinationSelected: (index) => context.go(_routes[index]),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'Início',
+            label: 'Inicio',
           ),
           NavigationDestination(
             icon: Icon(Icons.pets_outlined),
             selectedIcon: Icon(Icons.pets),
-            label: 'Meus Pets',
+            label: 'Mascotas',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
-            label: 'Calendário',
+            label: 'Calendario',
           ),
           NavigationDestination(
             icon: Icon(Icons.storefront_outlined),
             selectedIcon: Icon(Icons.storefront),
-            label: 'Loja',
+            label: 'Tienda',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -85,28 +86,45 @@ class _AppShellState extends State<AppShell> {
   }
 }
 
-// Determine initial route based on onboarding state
-Future<String> _getInitialLocation() async {
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
-  return onboardingDone ? '/home' : '/onboarding';
-}
-
 GoRouter buildAppRouter() {
   return GoRouter(
     initialLocation: '/home',
     redirect: (context, state) async {
-      if (state.uri.path == '/home') {
+      final path = state.uri.path;
+      final isAuthRoute = path == '/login' || path == '/register';
+      final isOnboarding = path == '/onboarding';
+
+      // Check onboarding first
+      if (!isOnboarding && !isAuthRoute) {
         final prefs = await SharedPreferences.getInstance();
         final onboardingDone = prefs.getBool('onboarding_done') ?? false;
         if (!onboardingDone) return '/onboarding';
       }
+
+      // Auth guard: redirect to login if not logged in
+      if (!isAuthRoute && !isOnboarding && !SupabaseService.isLoggedIn) {
+        return '/login';
+      }
+
+      // If already logged in and going to auth routes, redirect to home
+      if (isAuthRoute && SupabaseService.isLoggedIn) {
+        return '/home';
+      }
+
       return null;
     },
     routes: [
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => AppShell(
